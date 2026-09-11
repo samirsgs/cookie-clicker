@@ -1,2 +1,3 @@
 # cookie-clicker
-fuck you snicker
+This is a project with me and kevin 
+We are working on a cookie clicker knockoff/Copy
