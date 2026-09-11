@@ -1,2 +1,2 @@
 # cookie-clicker
-click the cookie 
+fuck you snicker
