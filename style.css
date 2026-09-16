@@ -1,0 +1,15 @@
+#cookie {
+  cursor: pointer;
+  width: 200px;
+  transition: transform 0.1s ease;
+}
+
+#cookie.clicked {
+  animation: cookie-pop 0.15s ease;
+}
+
+@keyframes cookie-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.85); }
+  100% { transform: scale(1); }
+}
