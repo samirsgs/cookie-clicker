@@ -19,27 +19,46 @@
     </div>
 
     <!-- MIDDLE: buildings/upgrades feed -->
-    <div id="middle-panel">
-      <div id="news-bar">Welcome to your bakery!</div>
-      <div id="buildings-feed">
-        <!-- later: rows showing owned buildings, like the real game -->
-      </div>
-    </div>
+<div id="middle-panel">
+  <div id="top-nav">
+    <button class="nav-btn">Options</button>
+    <button class="nav-btn">Stats</button>
+    <div id="news-bar">Welcome to your bakery!</div>
+    <button class="nav-btn">Info</button>
+    <button class="nav-btn">Legacy</button>
+  </div>
+  <div id="buildings-feed">
+    <!-- later: rows showing owned buildings -->
+  </div>
+</div>
 
     <!-- RIGHT: store -->
-    <div id="shop">
-      <h2>Store</h2>
-      <div class="shop-item" id="buy-autoclicker" disabled>
-        <div class="item-icon"></div>
-        <div class="item-info">
-          <span class="item-name">Autoclicker</span>
-          <span class="item-cost">100</span>
-        </div>
-      </div>
+<div id="shop">
+    <h2>Store</h2>
+
+    <div id="category-icons">
+        <div class="category-icon">⛏️</div>
+        <div class="category-icon">👻</div>
+        <div class="category-icon">🍪</div>
+        <div class="category-icon">✋</div>
+        <div class="category-icon">💰</div>
     </div>
 
-  </div>
+    <div id="buy-selector">
+        <span class="buy-label">Buy</span>
+        <button class="buy-qty active" data-qty="1">1</button>
+        <button class="buy-qty" data-qty="10">10</button>
+        <button class="buy-qty" data-qty="100">100</button>
+    </div>
 
+    <div class="shop-item" id="buy-autoclicker" disabled>
+        <div class="item-icon">🖱️</div>
+        <div class="item-info">
+            <span class="item-name">Autoclicker</span>
+            <span class="item-cost">100</span>
+        </div>
+    </div>
+</div>
   <script src="script.js"></script>
 </body>
 </html>

@@ -8,6 +8,14 @@ const autoclickerCost = 100;
 let autoclickers = 0;
 const fallingContainer = document.getElementById("falling-cookies");
 const cookieCount = 160;
+const buyQtyButtons = document.querySelectorAll(".buy-qty");
+
+buyQtyButtons.forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    buyQtyButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+});
 
 for (let i = 0; i < cookieCount; i++) {
   const piece = document.createElement("div");
@@ -49,6 +57,7 @@ function updateShop() {
     buyButton.setAttribute("disabled", "true");
   }
 }
+
 
 buyButton.addEventListener("click", function() {
   if (score >= autoclickerCost) {
