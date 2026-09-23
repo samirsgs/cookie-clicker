@@ -3,7 +3,7 @@ let autoclickers = 0;
 let autoclickerBaseCost = 100;
 let selectedQty = 1;
 let pacmen = 0;
-let pacmanBaseCost = 500;
+let pacmanBaseCost = 1;
 let pacmanMultiplier = 1;
 let pacmanAnimationRunning = false;
 
@@ -109,7 +109,8 @@ function renderPacmanTrail() {
 
 function runPacmanLoop() {
   const dots = pacmanTrack.querySelectorAll(".cookie-dot");
-  if (dots.length === 0) {
+  const dotCount = dots.length;
+  if (dotCount === 0) {
     pacmanAnimationRunning = false;
     return;
   }
@@ -125,10 +126,12 @@ function runPacmanLoop() {
     position += speed;
     pacmanEl.style.left = position + "px";
 
+    const progress = position / trackWidth; // 0 (start) to 1 (end)
+
     dots.forEach(function(dot, index) {
       if (eatenSet.has(index)) return;
-      const dotLeft = dot.offsetLeft;
-      if (position + 60 >= dotLeft) {
+      const dotThreshold = (index + 1) / dotCount; // this cookie's position along the track, as a fraction
+      if (progress >= dotThreshold) {
         dot.classList.add("eaten");
         eatenSet.add(index);
       }
