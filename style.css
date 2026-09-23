@@ -291,3 +291,22 @@ html, body {
 .cookie-dot.eaten {
   opacity: 0;
 }
+
+.mode-btn {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.mode-btn.active {
+  background-color: #4caf50;
+  border-color: #45a049;
+}
+
+#mode-sell.active {
+  background-color: #e53935;
+  border-color: #d32f2f;
+}
