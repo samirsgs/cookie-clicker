@@ -3,15 +3,21 @@ let autoclickers = 0;
 let autoclickerBaseCost = 100;
 let selectedQty = 1;
 let shopMode = "buy"; // "buy" of "sell"
-const refundRate = 0.5; // 0.5 = 50% geld terug, zet op 1.0 voor 100%
+const refundRate = 0.5; // 50% refund waarde
 
 let pacmen = 0;
-let pacmanBaseCost = 500;
+let pacmanBaseCost = 200;
 let pacmanMultiplier = 1;
 let pacmanAnimationRunning = false;
 
+let ovens = 0;
+let ovenBaseCost = 1000;
+let ovenMultiplier = 0; // Geeft +0.5 multiplier per oven
+
 const cookie = document.getElementById("cookie");
 const scoreDisplay = document.getElementById("score");
+const cpsDisplay = document.getElementById("cps");
+
 const buyButton = document.getElementById("buy-autoclicker");
 const costDisplay = buyButton.querySelector(".item-cost");
 
@@ -20,6 +26,9 @@ const pacmanCostDisplay = buyPacmanButton.querySelector(".item-cost");
 const pacmanRow = document.getElementById("pacman-row");
 const pacmanTrack = document.getElementById("pacman-track");
 const pacmanEl = document.getElementById("pacman");
+
+const buyOvenButton = document.getElementById("buy-oven");
+const ovenCostDisplay = buyOvenButton.querySelector(".item-cost");
 
 const modeBuyBtn = document.getElementById("mode-buy");
 const modeSellBtn = document.getElementById("mode-sell");
@@ -36,9 +45,10 @@ function formatNumber(num) {
 
 function updateScoreDisplay() {
   scoreDisplay.textContent = formatNumber(score) + " cookies";
+  cpsDisplay.textContent = "per second: " + formatNumber(autoclickers);
 }
 
-// ---------- KOSTEN & REFUND BEREKENINGEN ----------
+// ---------- AUTOCLICKER ----------
 
 function getAutoclickerCost(qty) {
   let totalCost = 0;
@@ -57,26 +67,6 @@ function getAutoclickerRefund(qty) {
   }
   return totalRefund;
 }
-
-function getPacmanCost(qty) {
-  let totalCost = 0;
-  for (let i = 0; i < qty; i++) {
-    totalCost += Math.ceil(pacmanBaseCost * Math.pow(1.15, pacmen + i));
-  }
-  return totalCost;
-}
-
-function getPacmanRefund(qty) {
-  let actualQty = Math.min(qty, pacmen);
-  let totalRefund = 0;
-  for (let i = 1; i <= actualQty; i++) {
-    let costAtThatLevel = Math.ceil(pacmanBaseCost * Math.pow(1.15, pacmen - i));
-    totalRefund += Math.floor(costAtThatLevel * refundRate);
-  }
-  return totalRefund;
-}
-
-// ---------- WINKEL UPDATES ----------
 
 function updateShop() {
   if (shopMode === "buy") {
@@ -98,28 +88,6 @@ function updateShop() {
   }
 }
 
-function updatePacmanShop() {
-  if (shopMode === "buy") {
-    const cost = getPacmanCost(selectedQty);
-    pacmanCostDisplay.textContent = formatNumber(cost);
-    if (score >= cost) {
-      buyPacmanButton.removeAttribute("disabled");
-    } else {
-      buyPacmanButton.setAttribute("disabled", "true");
-    }
-  } else {
-    const refund = getPacmanRefund(selectedQty);
-    pacmanCostDisplay.textContent = "+" + formatNumber(refund);
-    if (pacmen >= selectedQty) {
-      buyPacmanButton.removeAttribute("disabled");
-    } else {
-      buyPacmanButton.setAttribute("disabled", "true");
-    }
-  }
-}
-
-// ---------- EVENT LISTENERS: AUTOCLICKER ----------
-
 buyButton.addEventListener("click", function() {
   if (buyButton.hasAttribute("disabled")) return;
 
@@ -138,14 +106,51 @@ buyButton.addEventListener("click", function() {
   }
 
   updateScoreDisplay();
-  updateShop();
-  updatePacmanShop();
+  updateAllShops();
 });
 
-// ---------- EVENT LISTENERS: PAC-MAN ----------
+// ---------- PAC-MAN ----------
+
+function getPacmanCost(qty) {
+  let totalCost = 0;
+  for (let i = 0; i < qty; i++) {
+    totalCost += Math.ceil(pacmanBaseCost * Math.pow(1.15, pacmen + i));
+  }
+  return totalCost;
+}
+
+function getPacmanRefund(qty) {
+  let actualQty = Math.min(qty, pacmen);
+  let totalRefund = 0;
+  for (let i = 1; i <= actualQty; i++) {
+    let costAtThatLevel = Math.ceil(pacmanBaseCost * Math.pow(1.15, pacmen - i));
+    totalRefund += Math.floor(costAtThatLevel * refundRate);
+  }
+  return totalRefund;
+}
 
 function updatePacmanMultiplier() {
   pacmanMultiplier = 1 + (pacmen * 0.1);
+}
+
+function updatePacmanShop() {
+  if (shopMode === "buy") {
+    const cost = getPacmanCost(selectedQty);
+    pacmanCostDisplay.textContent = formatNumber(cost);
+    if (score >= cost) {
+      buyPacmanButton.removeAttribute("disabled");
+    } else {
+      buyPacmanButton.setAttribute("disabled", "true");
+    }
+  } else {
+    const refund = getPacmanRefund(selectedQty);
+    pacmanCostDisplay.textContent = "+" + formatNumber(refund);
+    if (pacmen >= selectedQty) {
+      buyPacmanButton.removeAttribute("disabled");
+    } else {
+      buyPacmanButton.setAttribute("disabled", "true");
+    }
+  }
 }
 
 function renderPacmanTrail() {
@@ -229,17 +234,92 @@ buyPacmanButton.addEventListener("click", function() {
 
   updatePacmanMultiplier();
   updateScoreDisplay();
-  updatePacmanShop();
-  updateShop();
+  updateAllShops();
 });
+
+// ---------- OVEN (CLICK MULTIPLIER UPGRADE) ----------
+
+function getOvenCost(qty) {
+  let totalCost = 0;
+  for (let i = 0; i < qty; i++) {
+    totalCost += Math.ceil(ovenBaseCost * Math.pow(1.15, ovens + i));
+  }
+  return totalCost;
+}
+
+function getOvenRefund(qty) {
+  let actualQty = Math.min(qty, ovens);
+  let totalRefund = 0;
+  for (let i = 1; i <= actualQty; i++) {
+    let costAtThatLevel = Math.ceil(ovenBaseCost * Math.pow(1.15, ovens - i));
+    totalRefund += Math.floor(costAtThatLevel * refundRate);
+  }
+  return totalRefund;
+}
+
+function updateOvenMultiplier() {
+  ovenMultiplier = ovens * 0.5; // Elke oven telt op als +0.5 bij de multiplier
+}
+
+function updateOvenShop() {
+  if (shopMode === "buy") {
+    const cost = getOvenCost(selectedQty);
+    ovenCostDisplay.textContent = formatNumber(cost);
+    if (score >= cost) {
+      buyOvenButton.removeAttribute("disabled");
+    } else {
+      buyOvenButton.setAttribute("disabled", "true");
+    }
+  } else {
+    const refund = getOvenRefund(selectedQty);
+    ovenCostDisplay.textContent = "+" + formatNumber(refund);
+    if (ovens >= selectedQty) {
+      buyOvenButton.removeAttribute("disabled");
+    } else {
+      buyOvenButton.setAttribute("disabled", "true");
+    }
+  }
+}
+
+buyOvenButton.addEventListener("click", function() {
+  if (buyOvenButton.hasAttribute("disabled")) return;
+
+  if (shopMode === "buy") {
+    const cost = getOvenCost(selectedQty);
+    if (score >= cost) {
+      score -= cost;
+      ovens += selectedQty;
+    }
+  } else {
+    if (ovens >= selectedQty) {
+      const refund = getOvenRefund(selectedQty);
+      score += refund;
+      ovens -= selectedQty;
+    }
+  }
+
+  updateOvenMultiplier();
+  updateScoreDisplay();
+  updateAllShops();
+});
+
+// ---------- WINKELS SAMEN VERNIEUWEN ----------
+
+function updateAllShops() {
+  updateShop();
+  updatePacmanShop();
+  updateOvenShop();
+}
 
 // ---------- COOKIE CLICK ----------
 
 cookie.addEventListener("click", function() {
-  score += Math.ceil(1 * pacmanMultiplier);
+  // Totale click-waarde = (basis 1 + oven boost) vermenigvuldigd met pacmanMultiplier
+  const totalMultiplier = (1 + ovenMultiplier) * pacmanMultiplier;
+  score += Math.ceil(totalMultiplier);
+
   updateScoreDisplay();
-  updateShop();
-  updatePacmanShop();
+  updateAllShops();
 
   cookie.classList.remove("clicked");
   void cookie.offsetWidth;
@@ -252,8 +332,7 @@ setInterval(function() {
   if (autoclickers > 0) {
     score += autoclickers;
     updateScoreDisplay();
-    updateShop();
-    updatePacmanShop();
+    updateAllShops();
   }
 }, 1000);
 
@@ -263,17 +342,17 @@ modeBuyBtn.addEventListener("click", function() {
   shopMode = "buy";
   modeBuyBtn.classList.add("active");
   modeSellBtn.classList.remove("active");
-  updateShop();
-  updatePacmanShop();
+  updateAllShops();
 });
 
 modeSellBtn.addEventListener("click", function() {
   shopMode = "sell";
   modeSellBtn.classList.add("active");
   modeBuyBtn.classList.remove("active");
-  updateShop();
-  updatePacmanShop();
+  updateAllShops();
 });
+
+// ---------- BUY QUANTITY SELECTOR ----------
 
 const buyQtyButtons = document.querySelectorAll(".buy-qty");
 
@@ -282,12 +361,11 @@ buyQtyButtons.forEach(function(btn) {
     buyQtyButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     selectedQty = parseInt(btn.dataset.qty);
-    updateShop();
-    updatePacmanShop();
+    updateAllShops();
   });
 });
 
 // ---------- INITIAL SETUP ----------
 
-updateShop();
-updatePacmanShop();
+updateScoreDisplay();
+updateAllShops();
