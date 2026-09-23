@@ -1,6 +1,6 @@
 let score = 0;
 let autoclickers = 0;
-let autoclickerBaseCost = 100;
+let autoclickerBaseCost = 1;
 let selectedQty = 1;
 let shopMode = "buy"; // "buy" of "sell"
 const refundRate = 0.5; // 50% refund waarde
