@@ -253,3 +253,41 @@ html, body {
   color: #3b2a1a;
   font-weight: bold;
 }
+.building-row {
+  position: relative;
+  height: 60px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+#pacman-track {
+  position: relative;
+  left: 60px;
+  right: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+#pacman {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32px;
+  z-index: 2;
+  transition: left 0.05s linear;
+}
+
+.cookie-dot {
+  font-size: 24px;
+  transition: opacity 0.15s ease;
+}
+
+.cookie-dot.eaten {
+  opacity: 0;
+}

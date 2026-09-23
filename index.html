@@ -27,9 +27,15 @@
     <button class="nav-btn">Info</button>
     <button class="nav-btn">Legacy</button>
   </div>
-  <div id="buildings-feed">
+<div id="buildings-feed">
     <!-- later: rows showing owned buildings -->
-  </div>
+     <div id="buildings-feed">
+    <div id="pacman-row" class="building-row" style="display: none;">
+    <div id="pacman">😋</div>
+    <div id="pacman-track"></div>
+    </div>
+    </div>
+    </div>
 </div>
 
     <!-- RIGHT: store -->
@@ -37,11 +43,11 @@
     <h2>Store</h2>
 
     <div id="category-icons">
-        <div class="category-icon">⛏️</div>
-        <div class="category-icon">👻</div>
-        <div class="category-icon">🍪</div>
-        <div class="category-icon">✋</div>
-        <div class="category-icon">💰</div>
+        <div class="category-icon">💩</div>
+        <div class="category-icon">💩</div>
+        <div class="category-icon">💩</div>
+        <div class="category-icon">💩</div>
+        <div class="category-icon">💩</div>
     </div>
 
     <div id="buy-selector">
@@ -58,6 +64,14 @@
             <span class="item-cost">100</span>
         </div>
     </div>
+
+    <div class="shop-item" id="buy-pacman" disabled>
+        <div class="item-icon">👻</div>
+        <div class="item-info">
+        <span class="item-name">Pac-Man</span>
+        <span class="item-cost">500</span>
+    </div>
+</div>
 </div>
   <script src="script.js"></script>
 </body>
