@@ -39,7 +39,9 @@ function saveGame() {
   const gameState = {
     score: score,
     autoclickers: autoclickers,
-    pacmen: pacmen
+    pacmen: pacmen,
+    ovens: ovens,
+    unlockedAchievements: unlockedAchievements
   };
   localStorage.setItem("cookieClickerSave", JSON.stringify(gameState));
 }
@@ -52,11 +54,13 @@ function loadGame() {
   score = gameState.score || 0;
   autoclickers = gameState.autoclickers || 0;
   pacmen = gameState.pacmen || 0;
+  ovens = gameState.ovens || 0;
+  unlockedAchievements = gameState.unlockedAchievements || [];
 
   updatePacmanMultiplier();
+  updateOvenMultiplier();
   updateScoreDisplay();
-  updateShop();
-  updatePacmanShop();
+  updateAllShops();
 
   if (pacmen > 0) {
     pacmanRow.style.display = "flex";
@@ -204,6 +208,83 @@ function renderPacmanTrail() {
     runPacmanLoop();
   }
 }
+// ---------- GOLDEN COOKIE ----------
+
+const goldenCookieEl = document.getElementById("golden-cookie");
+
+function spawnGoldenCookie() {
+  const panel = document.getElementById("left-panel");
+  const maxX = panel.offsetWidth - 60;
+  const maxY = panel.offsetHeight - 60;
+
+  goldenCookieEl.style.left = Math.max(0, Math.random() * maxX) + "px";
+  goldenCookieEl.style.top = Math.max(0, Math.random() * maxY) + "px";
+  goldenCookieEl.style.display = "block";
+
+  // disappears after 8 seconds if not clicked
+  const disappearTimeout = setTimeout(function() {
+    goldenCookieEl.style.display = "none";
+  }, 8000);
+
+  goldenCookieEl.onclick = function() {
+    clearTimeout(disappearTimeout);
+    goldenCookieEl.style.display = "none";
+
+    const bonus = Math.max(50, Math.floor(score * 0.1)); // 10% of current score, minimum 50
+    score += bonus;
+    updateScoreDisplay();
+    updateShop();
+    updatePacmanShop();
+    showToast("Golden Cookie!", "+" + formatNumber(bonus) + " cookies");
+  };
+}
+
+function scheduleGoldenCookie() {
+  const delay = 20000 + Math.random() * 40000; // random between 20-60 seconds
+  setTimeout(function() {
+    spawnGoldenCookie();
+    scheduleGoldenCookie(); // schedule the next one
+  }, delay);
+}
+
+scheduleGoldenCookie();
+
+// ---------- ACHIEVEMENTS ----------
+
+const achievements = [
+  { id: "cookies_100", name: "Getting Started", desc: "Bake 100 cookies", check: () => score >= 100 },
+  { id: "cookies_1000", name: "Cookie Enthusiast", desc: "Bake 1,000 cookies", check: () => score >= 1000 },
+  { id: "cookies_100000", name: "Cookie Empire", desc: "Bake 100,000 cookies", check: () => score >= 100000 },
+  { id: "first_autoclicker", name: "Automation", desc: "Buy your first Autoclicker", check: () => autoclickers >= 1 },
+  { id: "first_pacman", name: "Waka Waka", desc: "Buy your first Pac-Man", check: () => pacmen >= 1 },
+  { id: "ten_autoclickers", name: "Clicker Army", desc: "Own 10 Autoclickers", check: () => autoclickers >= 10 },
+];
+
+let unlockedAchievements = [];
+
+function checkAchievements() {
+  achievements.forEach(function(ach) {
+    if (!unlockedAchievements.includes(ach.id) && ach.check()) {
+      unlockedAchievements.push(ach.id);
+      showToast("Achievement Unlocked!", ach.name + " — " + ach.desc);
+      saveGame();
+    }
+  });
+}
+
+function showToast(title, message) {
+  const toast = document.createElement("div");
+  toast.classList.add("toast");
+  toast.innerHTML = "<strong>" + title + "</strong>" + message;
+  document.getElementById("achievement-toast").appendChild(toast);
+
+  setTimeout(function() {
+    toast.remove();
+  }, 4000);
+}
+
+// check achievements periodically
+setInterval(checkAchievements, 1000);
 
 function runPacmanLoop() {
   const dots = pacmanTrack.querySelectorAll(".cookie-dot");
@@ -413,3 +494,4 @@ setInterval(saveGame, 10000);
 window.addEventListener("beforeunload", saveGame);
 updateScoreDisplay();
 updateAllShops();
+

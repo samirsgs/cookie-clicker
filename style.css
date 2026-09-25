@@ -284,3 +284,57 @@ html, body {
     transform: translateY(110vh) rotate(360deg);
   }
 }
+#left-panel {
+  position: relative; /* needed so golden cookie can be positioned inside it */
+}
+
+#golden-cookie {
+  position: absolute;
+  font-size: 40px;
+  cursor: pointer;
+  animation: golden-pulse 0.6s ease-in-out infinite alternate;
+  z-index: 10;
+}
+
+@keyframes golden-pulse {
+  from { transform: scale(1); filter: drop-shadow(0 0 5px gold); }
+  to   { transform: scale(1.15); filter: drop-shadow(0 0 15px gold); }
+}
+
+#achievement-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 999;
+}
+
+.toast {
+  background: #3b2a1a;
+  border: 2px solid #ffd76b;
+  border-radius: 6px;
+  padding: 12px 16px;
+  color: white;
+  font-family: Georgia, serif;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  animation: toast-in 0.3s ease, toast-out 0.4s ease 3.6s forwards;
+  min-width: 200px;
+}
+
+.toast strong {
+  color: #ffd76b;
+  display: block;
+  margin-bottom: 4px;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
