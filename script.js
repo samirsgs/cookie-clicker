@@ -411,3 +411,5 @@ setInterval(saveGame, 10000);
 
 // Also save right before the page closes/refreshes
 window.addEventListener("beforeunload", saveGame);
+updateScoreDisplay();
+updateAllShops();
