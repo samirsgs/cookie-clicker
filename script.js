@@ -2,8 +2,8 @@ let score = 0;
 let autoclickers = 0;
 let autoclickerBaseCost = 1;
 let selectedQty = 1;
-let shopMode = "buy"; // "buy" of "sell"
-const refundRate = 0.5; // 50% refund waarde
+let shopMode = "buy"; // "buy" or "sell"
+const refundRate = 0.5; // 50% refund value
 
 let pacmen = 0;
 let pacmanBaseCost = 200;
@@ -12,7 +12,9 @@ let pacmanAnimationRunning = false;
 
 let ovens = 0;
 let ovenBaseCost = 1000;
-let ovenMultiplier = 0; // Geeft +0.5 multiplier per oven
+let ovenMultiplier = 0; // +0.5 multiplier per oven
+
+let unlockedAchievements = [];
 
 const cookie = document.getElementById("cookie");
 const scoreDisplay = document.getElementById("score");
@@ -32,6 +34,25 @@ const ovenCostDisplay = buyOvenButton.querySelector(".item-cost");
 
 const modeBuyBtn = document.getElementById("mode-buy");
 const modeSellBtn = document.getElementById("mode-sell");
+
+const fallingContainer = document.getElementById("falling-cookies");
+const goldenCookieEl = document.getElementById("golden-cookie");
+
+// ---------- FALLING COOKIES BACKGROUND ----------
+
+const cookieCount = 25;
+for (let i = 0; i < cookieCount; i++) {
+  const piece = document.createElement("img");
+  piece.src = "cookie-icon.png";
+  piece.classList.add("falling-cookie");
+  piece.style.left = Math.random() * 100 + "vw";
+  const duration = 6 + Math.random() * 8;
+  piece.style.animationDuration = duration + "s";
+  piece.style.animationDelay = Math.random() * duration + "s";
+  const size = 20 + Math.random() * 20;
+  piece.style.width = size + "px";
+  fallingContainer.appendChild(piece);
+}
 
 // ---------- SAVE / LOAD ----------
 
@@ -67,6 +88,7 @@ function loadGame() {
     renderPacmanTrail();
   }
 }
+
 // ---------- NUMBER FORMATTING ----------
 
 function formatNumber(num) {
@@ -189,15 +211,15 @@ function updatePacmanShop() {
 
 function renderPacmanTrail() {
   pacmanTrack.innerHTML = "";
-  const cookieCount = Math.min(pacmen * 3, 20);
-  for (let i = 0; i < cookieCount; i++) {
-    const dot = document.createElement("span");
+  const trailCount = Math.min(pacmen * 3, 20);
+  for (let i = 0; i < trailCount; i++) {
+    const dot = document.createElement("img");
+    dot.src = "cookie-icon.png";
     dot.classList.add("cookie-dot");
-    dot.textContent = "🍪";
     pacmanTrack.appendChild(dot);
   }
 
-  if (cookieCount === 0) {
+  if (trailCount === 0) {
     pacmanRow.style.display = "none";
     pacmanAnimationRunning = false;
     return;
@@ -208,87 +230,11 @@ function renderPacmanTrail() {
     runPacmanLoop();
   }
 }
-// ---------- GOLDEN COOKIE ----------
-
-const goldenCookieEl = document.getElementById("golden-cookie");
-
-function spawnGoldenCookie() {
-  const panel = document.getElementById("left-panel");
-  const maxX = panel.offsetWidth - 60;
-  const maxY = panel.offsetHeight - 60;
-
-  goldenCookieEl.style.left = Math.max(0, Math.random() * maxX) + "px";
-  goldenCookieEl.style.top = Math.max(0, Math.random() * maxY) + "px";
-  goldenCookieEl.style.display = "block";
-
-  // disappears after 8 seconds if not clicked
-  const disappearTimeout = setTimeout(function() {
-    goldenCookieEl.style.display = "none";
-  }, 8000);
-
-  goldenCookieEl.onclick = function() {
-    clearTimeout(disappearTimeout);
-    goldenCookieEl.style.display = "none";
-
-    const bonus = Math.max(50, Math.floor(score * 0.1)); // 10% of current score, minimum 50
-    score += bonus;
-    updateScoreDisplay();
-    updateShop();
-    updatePacmanShop();
-    showToast("Golden Cookie!", "+" + formatNumber(bonus) + " cookies");
-  };
-}
-
-function scheduleGoldenCookie() {
-  const delay = 20000 + Math.random() * 40000; // random between 20-60 seconds
-  setTimeout(function() {
-    spawnGoldenCookie();
-    scheduleGoldenCookie(); // schedule the next one
-  }, delay);
-}
-
-scheduleGoldenCookie();
-
-// ---------- ACHIEVEMENTS ----------
-
-const achievements = [
-  { id: "cookies_100", name: "Getting Started", desc: "Bake 100 cookies", check: () => score >= 100 },
-  { id: "cookies_1000", name: "Cookie Enthusiast", desc: "Bake 1,000 cookies", check: () => score >= 1000 },
-  { id: "cookies_100000", name: "Cookie Empire", desc: "Bake 100,000 cookies", check: () => score >= 100000 },
-  { id: "first_autoclicker", name: "Automation", desc: "Buy your first Autoclicker", check: () => autoclickers >= 1 },
-  { id: "first_pacman", name: "Waka Waka", desc: "Buy your first Pac-Man", check: () => pacmen >= 1 },
-  { id: "ten_autoclickers", name: "Clicker Army", desc: "Own 10 Autoclickers", check: () => autoclickers >= 10 },
-];
-
-let unlockedAchievements = [];
-
-function checkAchievements() {
-  achievements.forEach(function(ach) {
-    if (!unlockedAchievements.includes(ach.id) && ach.check()) {
-      unlockedAchievements.push(ach.id);
-      showToast("Achievement Unlocked!", ach.name + " — " + ach.desc);
-      saveGame();
-    }
-  });
-}
-
-function showToast(title, message) {
-  const toast = document.createElement("div");
-  toast.classList.add("toast");
-  toast.innerHTML = "<strong>" + title + "</strong>" + message;
-  document.getElementById("achievement-toast").appendChild(toast);
-
-  setTimeout(function() {
-    toast.remove();
-  }, 4000);
-}
-
-// check achievements periodically
-setInterval(checkAchievements, 1000);
 
 function runPacmanLoop() {
   const dots = pacmanTrack.querySelectorAll(".cookie-dot");
-  if (dots.length === 0 || pacmen === 0) {
+  const dotCount = dots.length;
+  if (dotCount === 0 || pacmen === 0) {
     pacmanAnimationRunning = false;
     return;
   }
@@ -304,10 +250,12 @@ function runPacmanLoop() {
     position += speed;
     pacmanEl.style.left = position + "px";
 
+    const progress = position / trackWidth;
+
     dots.forEach(function(dot, index) {
       if (eatenSet.has(index)) return;
-      const dotLeft = dot.offsetLeft;
-      if (position + 60 >= dotLeft) {
+      const dotThreshold = (index + 1) / dotCount;
+      if (progress >= dotThreshold) {
         dot.classList.add("eaten");
         eatenSet.add(index);
       }
@@ -316,8 +264,13 @@ function runPacmanLoop() {
     if (position >= trackWidth) {
       clearInterval(moveInterval);
       setTimeout(function() {
-        dots.forEach(dot => dot.classList.remove("eaten"));
-        if (pacmen > 0) runPacmanLoop();
+        const stillDots = pacmanTrack.querySelectorAll(".cookie-dot");
+        if (stillDots.length === 0 || pacmen === 0) {
+          pacmanAnimationRunning = false;
+          return;
+        }
+        stillDots.forEach(dot => dot.classList.remove("eaten"));
+        runPacmanLoop();
       }, 800);
     }
   }, 16);
@@ -369,7 +322,7 @@ function getOvenRefund(qty) {
 }
 
 function updateOvenMultiplier() {
-  ovenMultiplier = ovens * 0.5; // Elke oven telt op als +0.5 bij de multiplier
+  ovenMultiplier = ovens * 0.5;
 }
 
 function updateOvenShop() {
@@ -414,7 +367,7 @@ buyOvenButton.addEventListener("click", function() {
   updateAllShops();
 });
 
-// ---------- WINKELS SAMEN VERNIEUWEN ----------
+// ---------- UPDATE ALL SHOPS TOGETHER ----------
 
 function updateAllShops() {
   updateShop();
@@ -425,7 +378,6 @@ function updateAllShops() {
 // ---------- COOKIE CLICK ----------
 
 cookie.addEventListener("click", function() {
-  // Totale click-waarde = (basis 1 + oven boost) vermenigvuldigd met pacmanMultiplier
   const totalMultiplier = (1 + ovenMultiplier) * pacmanMultiplier;
   score += Math.ceil(totalMultiplier);
 
@@ -476,22 +428,88 @@ buyQtyButtons.forEach(function(btn) {
   });
 });
 
+// ---------- GOLDEN COOKIE ----------
+
+function spawnGoldenCookie() {
+  const panel = document.getElementById("left-panel");
+  const maxX = panel.offsetWidth - 60;
+  const maxY = panel.offsetHeight - 60;
+
+  goldenCookieEl.style.left = Math.max(0, Math.random() * maxX) + "px";
+  goldenCookieEl.style.top = Math.max(0, Math.random() * maxY) + "px";
+  goldenCookieEl.style.display = "block";
+
+  const disappearTimeout = setTimeout(function() {
+    goldenCookieEl.style.display = "none";
+  }, 8000);
+
+  goldenCookieEl.onclick = function() {
+    clearTimeout(disappearTimeout);
+    goldenCookieEl.style.display = "none";
+
+    const bonus = Math.max(50, Math.floor(score * 0.1));
+    score += bonus;
+    updateScoreDisplay();
+    updateAllShops();
+    showToast("Golden Cookie!", "+" + formatNumber(bonus) + " cookies");
+  };
+}
+
+function scheduleGoldenCookie() {
+  const delay = 20000 + Math.random() * 40000;
+  setTimeout(function() {
+    spawnGoldenCookie();
+    scheduleGoldenCookie();
+  }, delay);
+}
+
+scheduleGoldenCookie();
+
+// ---------- ACHIEVEMENTS ----------
+
+const achievements = [
+  { id: "cookies_100", name: "Getting Started", desc: "Bake 100 cookies", check: () => score >= 100 },
+  { id: "cookies_1000", name: "Cookie Enthusiast", desc: "Bake 1,000 cookies", check: () => score >= 1000 },
+  { id: "cookies_100000", name: "Cookie Empire", desc: "Bake 100,000 cookies", check: () => score >= 100000 },
+  { id: "first_autoclicker", name: "Automation", desc: "Buy your first Autoclicker", check: () => autoclickers >= 1 },
+  { id: "first_pacman", name: "Waka Waka", desc: "Buy your first Pac-Man", check: () => pacmen >= 1 },
+  { id: "ten_autoclickers", name: "Clicker Army", desc: "Own 10 Autoclickers", check: () => autoclickers >= 10 },
+  { id: "first_oven", name: "Heating Up", desc: "Buy your first Oven", check: () => ovens >= 1 },
+];
+
+function checkAchievements() {
+  achievements.forEach(function(ach) {
+    if (!unlockedAchievements.includes(ach.id) && ach.check()) {
+      unlockedAchievements.push(ach.id);
+      showToast("Achievement Unlocked!", ach.name + " — " + ach.desc);
+      saveGame();
+    }
+  });
+}
+
+function showToast(title, message) {
+  const toast = document.createElement("div");
+  toast.classList.add("toast");
+  toast.innerHTML = "<strong>" + title + "</strong>" + message;
+  document.getElementById("achievement-toast").appendChild(toast);
+
+  setTimeout(function() {
+    toast.remove();
+  }, 4000);
+}
+
+setInterval(checkAchievements, 1000);
+
 // ---------- INITIAL SETUP ----------
 
 loadGame();
-updateShop();
-updatePacmanShop();
+updateAllShops();
+updateOvenMultiplier();
 
 document.getElementById("save-btn").addEventListener("click", function() {
   saveGame();
   alert("Game saved!");
 });
 
-// Auto-save every 10 seconds
 setInterval(saveGame, 10000);
-
-// Also save right before the page closes/refreshes
 window.addEventListener("beforeunload", saveGame);
-updateScoreDisplay();
-updateAllShops();
-

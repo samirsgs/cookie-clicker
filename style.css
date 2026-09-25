@@ -338,3 +338,25 @@ html, body {
   from { opacity: 1; }
   to   { opacity: 0; }
 }
+.item-icon img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.falling-cookie {
+  position: absolute;
+  top: -50px;
+  opacity: 0.6;
+  animation: fall linear infinite;
+}
+
+.cookie-dot {
+  width: 24px;
+  transition: opacity 0.15s ease;
+}
+
+#golden-cookie img {
+  width: 40px;
+  height: 40px;
+}

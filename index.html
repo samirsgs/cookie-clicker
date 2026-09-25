@@ -16,7 +16,7 @@
             <h1 id="score">0 cookies</h1>
             <p id="cps">per second: 0</p>
             <img id="cookie" src="image.png" alt="Cookie">
-            <div id="golden-cookie" style="display: none;">✨🍪</div>
+            <div id="golden-cookie" style="display: none;"><img src="golden-cookie-icon.png" alt="Golden Cookie"></div>
             <div id="falling-cookies"></div>
             <div id="achievement-toast"></div>
             
@@ -52,38 +52,37 @@
                 <div class="category-icon">💩</div>
             </div>
 
-            <div id="buy-selector">
+          <div id="buy-selector">
                 <button id="mode-buy" class="mode-btn active">Buy</button>
                 <button id="mode-sell" class="mode-btn">Sell</button>
                 <button class="buy-qty active" data-qty="1">1</button>
                 <button class="buy-qty" data-qty="10">10</button>
                 <button class="buy-qty" data-qty="100">100</button>
-            </div>
+          </div>
 
-            <div class="shop-item" id="buy-autoclicker" disabled>
-                <div class="item-icon">🖱️</div>
-                <div class="item-info">
-                    <span class="item-name">Autoclicker</span>
-                    <span class="item-cost">1</span>
-                </div>
-            </div>
-
-            <div class="shop-item" id="buy-pacman" disabled>
-                <div class="item-icon">👻</div>
-                <div class="item-info">
-                    <span class="item-name">Pac-Man</span>
-                    <span class="item-cost">200</span>
-                </div>
-            </div>
-
-            <div class="shop-item" id="buy-oven" disabled>
-                <div class="item-icon">♨️</div>
-                <div class="item-info">
-                    <span class="item-name">Oven</span>
-                    <span class="item-cost">1000</span>
-                </div>
+        <div class="shop-item" id="buy-autoclicker" disabled>
+            <div class="item-icon"><img src="autoclicker-icon.png" alt="Autoclicker"></div>
+            <div class="item-info">
+            <span class="item-name">Autoclicker</span>
+            <span class="item-cost">1</span>
             </div>
         </div>
+
+<div class="shop-item" id="buy-pacman" disabled>
+    <div class="item-icon"><img src="pacman-icon.png" alt="Pac-Man"></div>
+    <div class="item-info">
+        <span class="item-name">Pac-Man</span>
+        <span class="item-cost">200</span>
+    </div>
+</div>
+
+<div class="shop-item" id="buy-oven" disabled>
+    <div class="item-icon"><img src="oven-icon.png" alt="Oven"></div>
+    <div class="item-info">
+        <span class="item-name">Oven</span>
+        <span class="item-cost">1000</span>
+    </div>
+</div>
     </div>
     <script src="script.js"></script>
 </body>
